@@ -28,3 +28,6 @@ dist-ssr
 
 # Claude Code documentation
 CLAUDE.md
+
+# Environment variables file
+.env

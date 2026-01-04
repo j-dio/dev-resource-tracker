@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
+import { supabase } from './supabaseClient'
 
 function App() {
   const [resources, setResources] = useState([]) // "resources" are basically our links
   const [newLink, setNewLink] = useState('')
 
+  console.log("Supabase connected:", supabase)
 
   return (
     <div className='app-container'>
