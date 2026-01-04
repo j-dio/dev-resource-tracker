@@ -1,38 +1,36 @@
-import { useState, useEffect } from 'react'
-import { supabase } from './supabaseClient'
+import { useState, useEffect } from "react";
+import { supabase } from "./supabaseClient";
 
 function App() {
-  const [resources, setResources] = useState([]) // "resources" are basically our links
-  const [newLink, setNewLink] = useState('')
+  const [resources, setResources] = useState([]); // "resources" are basically our links
 
-  console.log("Supabase connected:", supabase)
+  async function fetchResources() {
+    const { data, error } = await supabase.from("resources").select("*");
+
+    if (error) {
+      console.log("Error", error);
+    } else {
+      setResources(data);
+    }
+  }
+
+  useEffect(() => {
+    const loadData = async () => {
+      await fetchResources();
+    }
+    loadData();
+  }, [])
 
   return (
-    <div className='app-container'>
-      <h1>Dev Resource Tracker</h1>
-
-      {/* 1. Input Section */}
-      <div className='input-group'>
-        <input
-          type='text'
-          placeholder='Paste a tutorial link...'
-          value={newLink}
-          onChange={(e) => setNewLink(e.target.value)}
-        />
-        <button>Add Resource</button>
-      </div>
-
-      {/* 2. Display Section */}
+    <div>
+      <h1>My Dev Resources</h1>
       <ul>
-        {resources.map((resource, index) => (
-          <li key={resource.id}>
-            {/* something */}
-            {resource.title}
-          </li>
+        {resources.map((item) => (
+          <li key={item.id}>{item.title}</li>
         ))}
       </ul>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
