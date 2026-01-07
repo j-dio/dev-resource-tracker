@@ -3,6 +3,24 @@ import { supabase } from "./supabaseClient";
 
 function App() {
   const [resources, setResources] = useState([]); // "resources" are basically our links
+  const [newLink, setNewLink] = useState('')
+
+  async function addResource() {
+    if (newLink.length === 0) {
+      return;
+    } 
+
+    const { data, error } = await supabase
+      .from('resources')
+      .insert([{ title: newLink }])
+
+    if (error) {
+      console.log("Error", error);
+    } else {
+      setResources([...resources, data[0]])
+      setNewLink('')
+    }
+  }
 
   async function fetchResources() {
     const { data, error } = await supabase.from("resources").select("*");
