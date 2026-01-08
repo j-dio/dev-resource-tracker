@@ -4,6 +4,7 @@ import { supabase } from "./supabaseClient";
 function App() {
   const [resources, setResources] = useState([]); // "resources" are basically our links
   const [newLink, setNewLink] = useState("");
+  const [newUrl, setNewUrl] = useState("");
 
   async function fetchResources() {
     const { data, error } = await supabase.from("resources").select("*");
@@ -29,7 +30,7 @@ function App() {
 
     const { data, error } = await supabase
       .from("resources")
-      .insert([{ title: newLink }])
+      .insert([{ title: newLink, url: newUrl }])
       .select(); // .select() returns the newly inserted row(s)
 
     if (error) {
@@ -37,6 +38,7 @@ function App() {
     } else {
       setResources([...resources, data[0]]); // some performance optimization as we don't have to fetch all resources again
       setNewLink("");
+      setNewUrl("");
     }
   }
 
@@ -61,13 +63,26 @@ function App() {
           value={newLink}
           onChange={(e) => setNewLink(e.target.value)}
         />
-        <button onClick={addResource}>Add</button>
+        <input
+          type="text"
+          placeholder="Url..."
+          value={newUrl}
+          onChange={(e) => setNewUrl(e.target.value)}
+        />
+        <button
+          onClick={addResource}
+          disabled={newLink.length === 0 || newUrl.length === 0}
+        >
+          Add
+        </button>
       </div>
       <div className="display-group">
         <ul>
           {resources.map((item) => (
             <li key={item.id}>
-              {item.title}
+              <a href={item.url} target="_blank">
+                {item.title}
+              </a>
               <button onClick={() => deleteResource(item.id)}>Delete</button>
             </li>
           ))}
