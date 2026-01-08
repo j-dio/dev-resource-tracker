@@ -3,22 +3,23 @@ import { supabase } from "./supabaseClient";
 
 function App() {
   const [resources, setResources] = useState([]); // "resources" are basically our links
-  const [newLink, setNewLink] = useState('')
+  const [newLink, setNewLink] = useState("");
 
   async function addResource() {
     if (newLink.length === 0) {
       return;
-    } 
+    }
 
     const { data, error } = await supabase
-      .from('resources')
+      .from("resources")
       .insert([{ title: newLink }])
+      .select(); // .select() returns the newly inserted row(s)
 
     if (error) {
       console.log("Error", error);
     } else {
-      setResources([...resources, data[0]])
-      setNewLink('')
+      setResources([...resources, data[0]]); // some performance optimization as we don't have to fetch all resources again
+      setNewLink("");
     }
   }
 
@@ -35,18 +36,29 @@ function App() {
   useEffect(() => {
     const loadData = async () => {
       await fetchResources();
-    }
+    };
     loadData();
-  }, [])
+  }, []);
 
   return (
     <div>
       <h1>My Dev Resources</h1>
-      <ul>
-        {resources.map((item) => (
-          <li key={item.id}>{item.title}</li>
-        ))}
-      </ul>
+      <div className="input-group">
+        <input
+          type="text"
+          placeholder="New resource..."
+          value={newLink}
+          onChange={(e) => setNewLink(e.target.value)}
+        />
+        <button onClick={addResource}>Add</button>
+      </div>
+      <div className="display-group">
+        <ul>
+          {resources.map((item) => (
+            <li key={item.id}>{item.title}</li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }
