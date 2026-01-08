@@ -5,6 +5,7 @@ function App() {
   const [resources, setResources] = useState([]); // "resources" are basically our links
   const [newLink, setNewLink] = useState("");
   const [newUrl, setNewUrl] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("General"); // default category
 
   async function fetchResources() {
     const { data, error } = await supabase.from("resources").select("*");
@@ -30,7 +31,7 @@ function App() {
 
     const { data, error } = await supabase
       .from("resources")
-      .insert([{ title: newLink, url: newUrl }])
+      .insert([{ title: newLink, url: newUrl, category: selectedCategory }])
       .select(); // .select() returns the newly inserted row(s)
 
     if (error) {
@@ -53,6 +54,11 @@ function App() {
       setResources(resources.filter((item) => item.id !== id));
     }
   }
+
+  const handleCategoryChange = (e) => {
+    setSelectedCategory(e.target.value);
+  }
+
   return (
     <div>
       <h1>My Dev Resources</h1>
@@ -69,6 +75,11 @@ function App() {
           value={newUrl}
           onChange={(e) => setNewUrl(e.target.value)}
         />
+        <select id="category-select" value={selectedCategory} onChange={handleCategoryChange}>
+          <option value="general">General</option>
+          <option value="javascript">JavaScript</option>
+          <option value="react">React</option>
+        </select>
         <button
           onClick={addResource}
           disabled={!newLink.trim() || !newUrl.trim()}
