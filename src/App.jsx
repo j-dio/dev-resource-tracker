@@ -24,7 +24,7 @@ function App() {
   }, []);
 
   async function addResource() {
-    if (newLink.length === 0) {
+    if (!newLink.trim() || !newUrl.trim()) {
       return;
     }
 
@@ -71,7 +71,7 @@ function App() {
         />
         <button
           onClick={addResource}
-          disabled={newLink.length === 0 || newUrl.length === 0}
+          disabled={!newLink.trim() || !newUrl.trim()}
         >
           Add
         </button>
