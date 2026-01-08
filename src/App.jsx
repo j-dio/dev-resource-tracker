@@ -22,7 +22,7 @@ function App() {
     loadData();
   }, []);
 
-    async function addResource() {
+  async function addResource() {
     if (newLink.length === 0) {
       return;
     }
@@ -40,6 +40,17 @@ function App() {
     }
   }
 
+  // function to take a specific id and delete that row from the database
+  // remove that item from local resources using .filter
+  async function deleteResource(id) {
+    const { error } = await supabase.from("resources").delete().eq("id", id);
+
+    if (error) {
+      console.log("Error", error);
+    } else {
+      setResources(resources.filter((item) => item.id !== id));
+    }
+  }
   return (
     <div>
       <h1>My Dev Resources</h1>
@@ -55,7 +66,10 @@ function App() {
       <div className="display-group">
         <ul>
           {resources.map((item) => (
-            <li key={item.id}>{item.title}</li>
+            <li key={item.id}>
+              {item.title}
+              <button onClick={() => deleteResource(item.id)}>Delete</button>
+            </li>
           ))}
         </ul>
       </div>
