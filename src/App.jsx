@@ -5,24 +5,6 @@ function App() {
   const [resources, setResources] = useState([]); // "resources" are basically our links
   const [newLink, setNewLink] = useState("");
 
-  async function addResource() {
-    if (newLink.length === 0) {
-      return;
-    }
-
-    const { data, error } = await supabase
-      .from("resources")
-      .insert([{ title: newLink }])
-      .select(); // .select() returns the newly inserted row(s)
-
-    if (error) {
-      console.log("Error", error);
-    } else {
-      setResources([...resources, data[0]]); // some performance optimization as we don't have to fetch all resources again
-      setNewLink("");
-    }
-  }
-
   async function fetchResources() {
     const { data, error } = await supabase.from("resources").select("*");
 
@@ -39,6 +21,24 @@ function App() {
     };
     loadData();
   }, []);
+
+    async function addResource() {
+    if (newLink.length === 0) {
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("resources")
+      .insert([{ title: newLink }])
+      .select(); // .select() returns the newly inserted row(s)
+
+    if (error) {
+      console.log("Error", error);
+    } else {
+      setResources([...resources, data[0]]); // some performance optimization as we don't have to fetch all resources again
+      setNewLink("");
+    }
+  }
 
   return (
     <div>
