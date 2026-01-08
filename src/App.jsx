@@ -5,6 +5,23 @@ function App() {
   const [resources, setResources] = useState([]); // "resources" are basically our links
   const [newLink, setNewLink] = useState("");
 
+  async function fetchResources() {
+    const { data, error } = await supabase.from("resources").select("*");
+
+    if (error) {
+      console.log("Error", error);
+    } else {
+      setResources(data);
+    }
+  }
+
+  useEffect(() => {
+    const loadData = async () => {
+      await fetchResources();
+    };
+    loadData();
+  }, []);
+
   async function addResource() {
     if (newLink.length === 0) {
       return;
@@ -23,23 +40,17 @@ function App() {
     }
   }
 
-  async function fetchResources() {
-    const { data, error } = await supabase.from("resources").select("*");
+  // function to take a specific id and delete that row from the database
+  // remove that item from local resources using .filter
+  async function deleteResource(id) {
+    const { error } = await supabase.from("resources").delete().eq("id", id);
 
     if (error) {
       console.log("Error", error);
     } else {
-      setResources(data);
+      setResources(resources.filter((item) => item.id !== id));
     }
   }
-
-  useEffect(() => {
-    const loadData = async () => {
-      await fetchResources();
-    };
-    loadData();
-  }, []);
-
   return (
     <div>
       <h1>My Dev Resources</h1>
@@ -55,7 +66,10 @@ function App() {
       <div className="display-group">
         <ul>
           {resources.map((item) => (
-            <li key={item.id}>{item.title}</li>
+            <li key={item.id}>
+              {item.title}
+              <button onClick={() => deleteResource(item.id)}>Delete</button>
+            </li>
           ))}
         </ul>
       </div>
