@@ -6,6 +6,7 @@ function App() {
   const [newLink, setNewLink] = useState("");
   const [newUrl, setNewUrl] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("General"); // default category
+  const [filterCategory, setFilterCategory] = useState("all");
 
   async function fetchResources() {
     const { data, error } = await supabase.from("resources").select("*");
@@ -59,9 +60,39 @@ function App() {
     setSelectedCategory(e.target.value);
   }
 
+  useEffect(() => {
+    const fetchFilteredResources = async () => {
+      if (filterCategory === "all") {
+        await fetchResources();
+        return;
+      }
+      
+      const { data, error } = await supabase
+        .from("resources")
+        .select("*")
+        .eq("category", filterCategory);
+
+      if (error) {
+        console.log("Error", error);
+      } else {
+        setResources(data);
+      }
+    };
+
+    fetchFilteredResources();
+  }, [filterCategory]);
+
   return (
     <div>
       <h1>My Dev Resources</h1>
+      <div className="filter-button">
+        <select id="category-filter" value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)}>
+          <option value="all">All Categories</option>
+          <option value="general">General</option>
+          <option value="javascript">JavaScript</option>
+          <option value="react">React</option>
+        </select>
+      </div>
       <div className="input-group">
         <input
           type="text"
